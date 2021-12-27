@@ -150,9 +150,6 @@ def main(courses = None):
         #item.download_all()
 
 if __name__ == '__main__':
-    #courses = ["EDUC101",'COSC477']
-    #main()
-    import DupFinder as DF
-    a = DF.DuplicateFinder('C:\\Users\\Ivan\\My Drive\\Lectures\\COSC122', recursive=False)
-    a.find_dups()
-    a.get_results()
+    #courses = ['COSC477','ENEL373']
+    courses = None
+    main(courses)
