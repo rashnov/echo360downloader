@@ -3,7 +3,13 @@ from requests.structures import CaseInsensitiveDict
 course_list = "https://echo360.net.au/user/enrollments"
 lecture_list = lambda x: "https://echo360.net.au/section/" + x + "/syllabus" # 40c860ba-1e6d-44bc-90ad-802e4a425276
 download_list = lambda x: 'https://echo360.net.au/api/ui/library/medias/' + x + '/download-info?' # 6760a76f-561a-414d-b2e5-d85b0fa4a733
-download_file = lambda x, y: 'https://echo360.net.au/media/download/' + x + '/hd2.mp4?lessonId=' + y #G_9bb9079d-d4c4-4941-9bdd-4d7a57686127_40c860ba-1e6d-44bc-90ad-802e4a425276_2021-07-19T14:00:00.000_2021-07-19T14:55:00.000
+
+def download_file(x, y, z):
+    url_list = []
+    for files in y:
+        url_list.append('https://echo360.net.au/media/download/' + x + '/' +  files + '?lessonId=' + z)
+    return(url_list)
+
 
 cookie = open('cookie.txt').readline()
 headers = CaseInsensitiveDict()
