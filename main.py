@@ -113,11 +113,14 @@ class CourseClass:
             if os.path.isfile(self.course_code + "/" + lecture_name) or os.path.isfile(self.course_code + "/" + lecture_name):
                 x = os.path.getsize(self.course_code + "/" + lecture_name)
                 y = int(r.headers.get('content-length', 0))
-                if x != y:
+                if x < y:
+                    print(x,y)
                     print(lecture_name, "exists")
                     print("redownloading this one")
                     os.remove(self.course_code + "/" + lecture_name)
                     self.downloader(lecture_name, r)
+                else:
+                    print('passing', x, y)
             else:
                 print("downloading ", lecture_name)
                 self.downloader(lecture_name, r)
@@ -129,8 +132,33 @@ class CourseClass:
 def multi_execute(object):
     object.download_all()
 
+def get_cookie():
+    'Cookie: '
+    print("Copy paste the request header from echo360 from the network tab in the dev tools\n(Type help for a how to)\n")
+    while True:
+        cookie = input()
+        if cookie == "help" or cookie == "?":
+            print("Open chrome \n Log into echo360 \n click f12 \n go to network tab \n hit refresh \n right click -> copy values -> copy request headers\n")
+        if cookie == EOFError or cookie == '' or cookie == "TE: trailers":
+            if successful:
+                return
+            else:
+                print("Empty")
+                raise BaseException("Nothing provided")
+        if 'Cookie: ' in cookie:
+            with open('cookie.txt', 'w') as f:
+                f.write(cookie.split('Cookie: ')[1])
+                successful = True
+
 
 def main(courses = None):
+    if os.path.isfile('cookie.txt') :
+        if os.path.getsize('cookie.txt') == 0:
+            get_cookie()
+        else:
+            pass
+    else:
+        get_cookie()
     courses_list = []
     r = requests.session()
     data = r.get(u.course_list, headers=u.headers).json()['data']
@@ -145,9 +173,6 @@ def main(courses = None):
     print(courses_list)
     with Pool(processes=4) as pool:
         pool.map(multi_execute, courses_list)
-
-    #for item in courses_list:
-        #item.download_all()
 
 if __name__ == '__main__':
     #courses = ['COSC477','ENEL373']
