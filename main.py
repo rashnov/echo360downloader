@@ -1,13 +1,23 @@
 import requests
 import json
+
+import util
 import util as u
 from multiprocessing import Pool
 import os
 
 SIDE = 0 # 0: left, 1: right
 
+# todo implement a nice way of getting every lecture avaiable and its size, comparing that to what has been
+# downloaded already, and then cleanly download new lecture videos while making sure that both sides are not
+# exactly t# todo implement a nice way of getting every lecture avaiable and its size, comparing that to what has been
+# downloaded
+#
+he same video. and that assumes there are 2 sides...
+
 
 class CourseClass:
+
     def __init__(self, course_code, course_id, r):
         self.course_code = course_code
         self.course_id = course_id
@@ -110,15 +120,17 @@ class CourseClass:
                 r = requests.get(urls[SIDE], stream=True, headers=u.headers)
             except:
                 continue
-            if os.path.isfile(self.course_code + "/" + lecture_name) or os.path.isfile(self.course_code + "/" + lecture_name):
+            if os.path.isfile(self.course_code + "/" + lecture_name):
                 x = os.path.getsize(self.course_code + "/" + lecture_name)
+                xx = 0
+                if os.path.isfile(self.course_code + "/" + lecture_name + "_disp2"):
+                    xx = os.path.getsize(self.course_code + "/" + lecture_name + "_disp2")
                 y = int(r.headers.get('content-length', 0))
-                if x < y:
-                    print(x,y)
+                if x != y and xx != y:
                     print(lecture_name, "exists")
-                    print("redownloading this one")
-                    os.remove(self.course_code + "/" + lecture_name)
-                    self.downloader(lecture_name, r)
+                    print("downloading screen 2")
+                    #os.remove(self.course_code + "/" + lecture_name)
+                    self.downloader(lecture_name + '_disp2', r)
                 else:
                     print('passing', x, y)
             else:
@@ -159,6 +171,7 @@ def main(courses = None):
             pass
     else:
         get_cookie()
+    util.util()
     courses_list = []
     r = requests.session()
     data = r.get(u.course_list, headers=u.headers).json()['data']
